@@ -3,17 +3,19 @@ import Header from './components/Header'
 import Tasks from './components/Tasks'
 import AddTask from './components/Add-Task'
 
+const URL = process.env.REACT_APP_API_URL
+
 function App() {
 
-// React useState Hooks--------------------------
+  // React useState Hooks--------------------------
   const [showAddTask , setShowAddTask] = useState(false)
   const [tasks, setTasks] = useState([])
-
-// useEffect hook - It do things first to be done after rendering such as fetching data
-useEffect(()=>{
-  const getTasks = async () =>{
-    const tasksFromServer = await fetchTasks()
-    setTasks(tasksFromServer)
+  
+  // useEffect hook - It do things first to be done after rendering such as fetching data
+  useEffect(()=>{
+    const getTasks = async () =>{
+      const tasksFromServer = await fetchTasks()
+      setTasks(tasksFromServer)
   }
 
   getTasks()
@@ -21,7 +23,7 @@ useEffect(()=>{
 
 // Fetch all Tasks Function
 const fetchTasks = async () =>{
-  const res = await fetch('http://localhost:5000/tasks')
+  const res = await fetch(`${URL}/tasks`)
   const data = await res.json()
 
   return data
@@ -35,7 +37,7 @@ const showForm = (e) =>{
 
 // Delete a Task
 const deleteTask = async (id) =>{
-  await fetch(`http://localhost:5000/tasks/${id}` ,{
+  await fetch(`${URL}/tasks/${id}` ,{
     method : 'DELETE'
   })
   
@@ -44,7 +46,7 @@ const deleteTask = async (id) =>{
 
 // Task Reminder toggle Function
 const reminderToggle = async (id) =>{
-  await fetch(`http://localhost:5000/tasks/${id}` ,{
+  await fetch(`${URL}/tasks/${id}` ,{
     method : 'PUT'
   })
   setTasks(tasks.map((task) => 
@@ -58,7 +60,7 @@ const addTask = async (text)=>{
   const id = Math.floor(Math.random() * 10000) + 1
   const newTask = {id , ...text}
 
-  await fetch(`http://localhost:5000/tasks`,{
+  await fetch(`${URL}/tasks`,{
     method: 'POST',
     headers: {
       'Content-Type' : 'application/json'
@@ -69,12 +71,12 @@ const addTask = async (text)=>{
   setTasks([...tasks , newTask])
 }
 
+
   return (
     <div className="App">
         <div className='app-container'>  
           <Header onClick = {showForm} formShown={showAddTask} />
           { showAddTask && <AddTask onAdd = {addTask} />}
-          {/* <hr style={{marginTop: '15px'}} />   */}
           <Tasks tasks={tasks} onDelete={deleteTask} onToggle={reminderToggle} />
         </div>
     </div>
